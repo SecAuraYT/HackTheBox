@@ -1,0 +1,12 @@
+#!/bin/bash
+#pwed = powershell web
+if [ -z $1 ]
+  then
+    port=9000
+else
+    port=$1
+fi
+
+tun0=$(/sbin/ifconfig tun0 | grep 'inet' | head -1 | awk '{print $2}')
+echo $tun0
+python -m SimpleHTTPServer $port
